@@ -1,8 +1,19 @@
-void dummy_test_entrypoint() {}
+#include "Drivers/Ports.h"
 
 void main() {
 
+    PortByteOut(0x3d4, 14);
+    int position = PortByteIn(0x3d5);
+    position = position << 8;
+
+    PortByteOut(0x3d4, 15);
+    position += PortByteIn(0x3d5);
+
+    int offsetFromVGA = position * 2;
+
     char* videoMemory = (char*) 0xb8000;
+    videoMemory[offsetFromVGA] = 'X';
+    videoMemory[offsetFromVGA + 1] = 0x0f;
     *videoMemory = 'H'; videoMemory += 2;
     *videoMemory = 'e'; videoMemory += 2;
     *videoMemory = 'l'; videoMemory += 2;

@@ -1,19 +1,49 @@
-all: bootloader kernel run
+SRCS = $(wildcard Kernel/*.c Kernel/*/*.c)
+HDRS = $(wildcard Kernel/*.h Kernel/*/*.h)
 
-bootloader:
-	nasm BootLoader/BootLoader.asm -f bin -o BootLoader.bin
+OBJDIR := Objs
+OBJS_TMP = $(SRCS:.c=.o)
+OBJS = $(foreach wrd, $(OBJS_TMP), $(OBJDIR)/$(wrd))
+OBJS += Objs/Kernel/KernelEntry.o
 
-kernel:
-	i386-elf-gcc -ffreestanding -c Kernel/Kernel.c -o Objs/Kernel.o
-	nasm Kernel/KernelEntry.asm -f elf -o Objs/KernelEntry.o
-	i386-elf-ld -o Kernel.bin -Ttext 0x1000 Objs/KernelEntry.o Objs/Kernel.o --oformat binary
-	cat BootLoader.bin Kernel.bin > CopperOS.bin
-	rm BootLoader.bin
-	rm Kernel.bin
+ASM = nasm
+CC = i386-elf-gcc
+LD = i386-elf-ld
 
-run:
-	qemu-system-x86_64 -fda CopperOS.bin
+CFLAGS = -ffreestanding -IKernel
+LDFLAGS = -Ttext 0x1000 --oformat binary
+ASMFLAGS = -f elf
+
+all: bootloader kernel image run
+
+kernel: $(OBJS) Kernel.bin
+bootloader: BootLoader.bin
+image: CopperOS.bin
+run: CopperOS.bin
+	@qemu-system-x86_64 -fda CopperOS.bin
+
+$(OBJDIR)/Kernel/%.o: Kernel/%.c $(HDRS)
+	@mkdir -p "$(@D)"
+	@echo Compiling Kernel/$<
+	@$(CC) $(CFLAGS) -c $< -o $@
+$(OBJDIR)/Kernel/%.o: Kernel/%.asm
+	@echo Compiling Kernel/$<
+	@$(ASM) $< $(ASMFLAGS) -o $@
+
+Kernel.bin: $(OBJS)
+	@echo ========Linking Kernel========
+	@$(LD) -o $@ $(LDFLAGS) $^
+BootLoader.bin:
+	@echo ========Linking Boot Loader========
+	@$(ASM) BootLoader/BootLoader.asm -f bin -o BootLoader.bin
+CopperOS.bin: Kernel.bin BootLoader.bin
+	@echo ========Merging the Boot Loader and the Kernel========
+	@cat BootLoader.bin Kernel.bin > CopperOS.bin
+	@rm BootLoader.bin
+	@rm Kernel.bin
 
 clean:
-	rm CopperOS.bin
-	rm Objs/*
+	@echo Removing CopperOS.bin
+	@rm CopperOS.bin
+	@echo Removing the Object Files
+	@rm -r Objs
