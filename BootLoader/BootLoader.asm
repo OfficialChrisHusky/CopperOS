@@ -13,12 +13,12 @@ KERNEL_OFFSET equ 0x1000
     call switch_to_pm
     jmp $ ; This should definitely never be reached
 
-%include "Print.asm"
-%include "PrintHex.asm"
-%include "DiskLoad.asm"
-%include "GDT.asm"
-%include "32BitPrint.asm"
-%include "32BitSwitch.asm"
+%include "BootLoader/Print.asm"
+%include "BootLoader/PrintHex.asm"
+%include "BootLoader/DiskLoad.asm"
+%include "BootLoader/GDT.asm"
+%include "BootLoader/32BitPrint.asm"
+%include "BootLoader/32BitSwitch.asm"
 
 [bits 16]
 load_kernel:
