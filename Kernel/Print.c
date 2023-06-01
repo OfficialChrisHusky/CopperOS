@@ -12,7 +12,7 @@ unsigned int PrintChar(char c, int col, int row, char attribute);
 unsigned int GetCursorOffset();
 void SetCursorOffset(unsigned int offset);
 
-void Print(const char* msg, int col, int row) {
+void Print(const char* msg, int col, int row, unsigned char color) {
 
     unsigned int offset;
 
@@ -29,7 +29,7 @@ void Print(const char* msg, int col, int row) {
     unsigned int i = 0;
     while (msg[i]) {
 
-        offset = PrintChar(msg[i++], col, row, WHITE_ON_BLACK);
+        offset = PrintChar(msg[i++], col, row, color);
         row = OFFSET_ROW(offset);
         col = OFFSET_COL(offset);
 
@@ -44,8 +44,7 @@ unsigned int PrintChar(char c, int col, int row, char attribute) {
 
     if (col >= COLS + 1 || row > ROWS + 1) {
 
-        vm[2 * (COLS) * (ROWS) -2] = 'E';
-        vm[2 * (COLS) * (ROWS) -1] = RED_ON_WHITE;
+        Print("Error!", COLS - 6, ROWS - 1, RED_ON_WHITE);
         return OFFSET(col, row);
 
     }

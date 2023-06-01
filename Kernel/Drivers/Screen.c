@@ -1,7 +1,7 @@
 #include "Screen.h"
 #include "Drivers/Graphics.h"
 
-void ClearScreen() {
+void ClearScreen(unsigned char color) {
 
     unsigned int size = COLS * ROWS;
     unsigned char* screen = (unsigned char*) VIDEO_MEMORY;
@@ -10,7 +10,7 @@ void ClearScreen() {
     for(i = 0; i < size; i++) {
 
         screen[i * 2] = ' ';
-        screen[i * 2 + 1] = WHITE_ON_BLACK;
+        screen[i * 2 + 1] = color;
 
     }
 

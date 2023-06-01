@@ -6,7 +6,13 @@
 
 void main() {
 
-    ClearScreen();
-    Print("Hello, World from inside the Kernel!", (COLS - 36) / 2, 0);
+    ClearScreen(WHITE_ON_BLACK);
+    Print("Hello, World from inside the Kernel!", (COLS - 36) / 2, 0, WHITE_ON_BLACK);
+
+    while (1) {
+
+        // Main OS loop
+
+    }
 
 }

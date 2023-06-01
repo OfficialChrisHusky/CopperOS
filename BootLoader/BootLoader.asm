@@ -37,6 +37,9 @@ BEGIN_PM:
     mov ebx, MSG_PROT_MODE
     call print_string_pm
     call KERNEL_OFFSET ; Enter the Kernel
+
+    mov ebx, MSG_KERNEL_RETURNED
+    call print_string_pm
     jmp $ ; Hand here, even though we should never get to this line
 
 BOOT_DRIVE db 0
@@ -44,6 +47,8 @@ BOOT_DRIVE db 0
 MSG_REAL_MODE db "Started in 16-bit real mode", 0
 MSG_PROT_MODE db "Loaded 32-bit protected mode", 0
 MSG_LOAD_KERNEL db "Loading Kernel into memory", 0
+
+MSG_KERNEL_RETURNED db "Kernel Returned Control to the Bootloader, This should never Happen!", 0
 
 times 510-($-$$) db 0
 dw 0xaa55

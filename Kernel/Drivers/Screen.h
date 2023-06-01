@@ -1,3 +1,3 @@
 #pragma once
 
-void ClearScreen();
+void ClearScreen(unsigned char color);
