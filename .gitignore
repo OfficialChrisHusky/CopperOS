@@ -21,6 +21,7 @@
 *.smod
 
 # Compiled Binaries
+*.bin
 
 # Compiled Static libraries
 *.lai
