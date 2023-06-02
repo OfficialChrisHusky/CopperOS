@@ -3,16 +3,16 @@
 #include "Drivers/Graphics.h"
 #include "Drivers/Ports.h"
 
-#define OFFSET(col, row) 2 * (row * COLS + col)
-#define OFFSET_ROW(offset) offset / (2 * COLS)
-#define OFFSET_COL(offset) (offset - (OFFSET_ROW(offset) * 2 * COLS)) / 2
+#define OFFSET(col, row) (2 * ((row) * COLS + (col)))
+#define OFFSET_ROW(offset) ((offset) / (2 * COLS))
+#define OFFSET_COL(offset) (((offset) - (OFFSET_ROW((offset)) * 2 * COLS)) / 2)
 
 unsigned int PrintChar(char c, int col, int row, char attribute);
 
 unsigned int GetCursorOffset();
 void SetCursorOffset(unsigned int offset);
 
-void Print(const char* msg, int col, int row, unsigned char color) {
+void PrintAt(const char* msg, int col, int row) {
 
     unsigned int offset;
 
@@ -29,11 +29,16 @@ void Print(const char* msg, int col, int row, unsigned char color) {
     unsigned int i = 0;
     while (msg[i]) {
 
-        offset = PrintChar(msg[i++], col, row, color);
+        offset = PrintChar(msg[i++], col, row, WHITE_ON_BLACK);
         row = OFFSET_ROW(offset);
         col = OFFSET_COL(offset);
 
     }
+
+}
+void Print(const char* msg) {
+
+    PrintAt(msg, -1, -1);
 
 }
 
@@ -44,7 +49,8 @@ unsigned int PrintChar(char c, int col, int row, char attribute) {
 
     if (col >= COLS + 1 || row > ROWS + 1) {
 
-        Print("Error!", COLS - 6, ROWS - 1, RED_ON_WHITE);
+        vm[2 * COLS * ROWS - 4] = 'E';
+        vm[2 * COLS * ROWS - 3] = RED_ON_WHITE;
         return OFFSET(col, row);
 
     }
@@ -81,7 +87,7 @@ unsigned int GetCursorOffset() {
     PortByteOut(CURSOR_CTRL, 15);
     offset += PortByteIn(CURSOR_DATA);
 
-    return offset;
+    return offset * 2;
 
 }
 void SetCursorOffset(unsigned int offset) {

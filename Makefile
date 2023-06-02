@@ -4,7 +4,9 @@ HDRS = $(wildcard Kernel/*.h Kernel/*/*.h)
 OBJDIR := Objs
 OBJS_TMP = $(SRCS:.c=.o)
 OBJS = $(foreach wrd, $(OBJS_TMP), $(OBJDIR)/$(wrd))
-OBJS += Objs/Kernel/KernelEntry.o
+OBJS += Objs/Kernel/KernelEntry.o Objs/Kernel/Interrupts/Interrupts.o
+
+BOOTLOADER_SRCS = $(wildcard BootLoader/*.asm)
 
 ASM = nasm
 CC = i386-elf-gcc
@@ -33,17 +35,17 @@ $(OBJDIR)/Kernel/%.o: Kernel/%.asm
 Kernel.bin: $(OBJS)
 	@echo ========Linking Kernel========
 	@$(LD) -o $@ $(LDFLAGS) $^
-BootLoader.bin:
+BootLoader.bin: $(BOOTLOADER_SRCS)
 	@echo ========Linking Boot Loader========
 	@$(ASM) BootLoader/BootLoader.asm -f bin -o BootLoader.bin
 CopperOS.bin: Kernel.bin BootLoader.bin
 	@echo ========Merging the Boot Loader and the Kernel========
 	@cat BootLoader.bin Kernel.bin > CopperOS.bin
-	@rm BootLoader.bin
-	@rm Kernel.bin
 
 clean:
-	@echo Removing CopperOS.bin
+	@echo Removing the Binaries
 	@rm CopperOS.bin
+	@rm BootLoader.bin
+	@rm Kernel.bin
 	@echo Removing the Object Files
 	@rm -r Objs
