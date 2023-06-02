@@ -1,5 +1,7 @@
 #include "Conversions.h"
 
+#include "Libc/String.h"
+
 void IntToASCII(int number, char* out) {
 
     int i, sign;
@@ -14,5 +16,7 @@ void IntToASCII(int number, char* out) {
 
     if(sign < 0) out[i++] = '-';
     out[i] = 0;
+
+    strrev(out);
 
 }

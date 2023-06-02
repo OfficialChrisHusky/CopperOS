@@ -1,6 +1,8 @@
 #include "ISR.h"
 #include "Interrupts/IDT.h"
 
+#include "Drivers/Ports.h"
+
 #include "Utils/Conversions.h"
 
 #include "Print.h"
@@ -44,6 +46,7 @@ char* exceptionMessages[32] = {
     "Reserved"
 
 };
+ISR interruptHandlers[256];
 
 void InstallISR() {
 
@@ -80,6 +83,34 @@ void InstallISR() {
     SetIDTGate(30, (uint32) isr30);
     SetIDTGate(31, (uint32) isr31);
 
+    PortByteOut(PIC_MASTER_CTRL, 0x11);
+    PortByteOut(PIC_SLAVE_CTRL,  0x11);
+    PortByteOut(PIC_MASTER_DATA, 0x20);
+    PortByteOut(PIC_SLAVE_DATA,  0x28);
+    PortByteOut(PIC_MASTER_DATA, 0x04);
+    PortByteOut(PIC_SLAVE_DATA,  0x02);
+    PortByteOut(PIC_MASTER_DATA, 0x01);
+    PortByteOut(PIC_SLAVE_DATA,  0x01);
+    PortByteOut(PIC_MASTER_DATA, 0x0);
+    PortByteOut(PIC_SLAVE_DATA,  0x0);
+
+    SetIDTGate(32, (uint32) irq0);
+    SetIDTGate(33, (uint32) irq1);
+    SetIDTGate(34, (uint32) irq2);
+    SetIDTGate(35, (uint32) irq3);
+    SetIDTGate(36, (uint32) irq4);
+    SetIDTGate(37, (uint32) irq5);
+    SetIDTGate(38, (uint32) irq6);
+    SetIDTGate(39, (uint32) irq7);
+    SetIDTGate(40, (uint32) irq8);
+    SetIDTGate(41, (uint32) irq9);
+    SetIDTGate(42, (uint32) irq10);
+    SetIDTGate(43, (uint32) irq11);
+    SetIDTGate(44, (uint32) irq12);
+    SetIDTGate(45, (uint32) irq13);
+    SetIDTGate(46, (uint32) irq14);
+    SetIDTGate(47, (uint32) irq15);
+
     SetIDT();
 
 }
@@ -95,5 +126,24 @@ void ISRHandler(Registers registers) {
 
     Print(exceptionMessages[registers.interruptNum]);
     Print("\n");
+
+}
+void IRQHandler(Registers registers) {
+
+    if(registers.interruptNum > 39)
+        PortByteOut(PIC_SLAVE_CTRL, 0x20);
+    
+    PortByteOut(PIC_MASTER_CTRL, 0x20);
+
+    if (interruptHandlers[registers.interruptNum] == 0) return;
+
+    ISR handler = interruptHandlers[registers.interruptNum];
+    handler(registers);
+
+}
+
+void RegisterInterruptHandler(uint8 num, ISR handler) {
+
+    interruptHandlers[num] = handler;
 
 }
