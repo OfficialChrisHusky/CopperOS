@@ -4,7 +4,7 @@ HDRS = $(wildcard Kernel/*.h Kernel/*/*.h)
 OBJDIR := Objs
 OBJS_TMP = $(SRCS:.c=.o)
 OBJS = $(foreach wrd, $(OBJS_TMP), $(OBJDIR)/$(wrd))
-OBJS += Objs/Kernel/KernelEntry.o Objs/Kernel/Interrupts/Interrupts.o
+OBJS += Objs/Kernel/Core/KernelEntry.o Objs/Kernel/Interrupts/Interrupts.o
 
 BOOTLOADER_SRCS = $(wildcard BootLoader/*.asm)
 

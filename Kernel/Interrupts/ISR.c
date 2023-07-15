@@ -2,10 +2,11 @@
 #include "Interrupts/IDT.h"
 
 #include "Drivers/Ports.h"
+#include "Drivers/Keyboard.h"
 
+#include "Utils/Print.h"
+#include "Utils/Timer.h"
 #include "Utils/Conversions.h"
-
-#include "Print.h"
 
 char* exceptionMessages[32] = {
 
@@ -112,6 +113,13 @@ void InstallISR() {
     SetIDTGate(47, (uint32) irq15);
 
     SetIDT();
+
+}
+void InstallIRQ() {
+
+    asm volatile("sti");
+    InitTimer(50);
+    InitKeyboard();
 
 }
 

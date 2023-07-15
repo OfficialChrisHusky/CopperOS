@@ -1,23 +1,19 @@
 #include "Timer.h"
 
-#include "Utils/Conversions.h"
-
 #include "Drivers/Ports.h"
 
 #include "Interrupts/ISR.h"
 
-#include "Print.h"
+#include "Libc/Function.h"
+
+#include "Utils/Conversions.h"
+#include "Utils/Print.h"
 
 uint32 tick = 0;
 static void TimerCallback(Registers registers) {
 
     tick++;
-    Print("Tick: ");
-
-    char tickStr[256];
-    IntToASCII(tick, tickStr);
-    Print(tickStr);
-    Print("\n");
+    UNUSED(registers);
     
 }
 

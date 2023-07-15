@@ -5,3 +5,5 @@
 
 void PrintAt(const char* msg, int col, int row);
 void Print(const char* msg);
+
+void PrintBackspace();

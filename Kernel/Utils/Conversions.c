@@ -17,6 +17,6 @@ void IntToASCII(int number, char* out) {
     if(sign < 0) out[i++] = '-';
     out[i] = 0;
 
-    strrev(out);
+    reverse(out);
 
 }

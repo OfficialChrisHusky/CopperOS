@@ -3,6 +3,8 @@
 #include "Drivers/Graphics.h"
 #include "Drivers/Ports.h"
 
+#include "Core/Types.h"
+
 #define OFFSET(col, row) (2 * ((row) * COLS + (col)))
 #define OFFSET_ROW(offset) ((offset) / (2 * COLS))
 #define OFFSET_COL(offset) (((offset) - (OFFSET_ROW((offset)) * 2 * COLS)) / 2)
@@ -42,6 +44,16 @@ void Print(const char* msg) {
 
 }
 
+void PrintBackspace() {
+
+    uint32 offset = GetCursorOffset() - 2;
+    uint32 row = OFFSET_ROW(offset);
+    uint32 col = OFFSET_COL(offset);
+
+    PrintChar(0x08, col, row, WHITE_ON_BLACK);
+
+}
+
 unsigned int PrintChar(char c, int col, int row, char attribute) {
 
     unsigned char* vm = (unsigned char*) VIDEO_MEMORY;
@@ -61,10 +73,15 @@ unsigned int PrintChar(char c, int col, int row, char attribute) {
     else
         offset = GetCursorOffset();
     
-    if(c == '\n') {
+    if (c == '\n') {
 
         row = OFFSET_ROW(offset);
         offset = OFFSET(0, row + 1);
+
+    } else if (c == 0x08) {
+
+        vm[offset] = ' ';
+        vm[offset + 1] = attribute;
 
     } else {
         

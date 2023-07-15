@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Types.h"
+#include "Core/Types.h"
 
 extern void isr0();
 extern void isr1();
@@ -84,6 +84,8 @@ typedef struct {
 } Registers;
 
 void InstallISR();
+void InstallIRQ();
+
 void ISRHandler(Registers registers);
 
 typedef void (*ISR) (Registers);
